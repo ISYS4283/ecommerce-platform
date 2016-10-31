@@ -8,6 +8,20 @@ ALTER PROCEDURE register_vendor
 	@description NVARCHAR(MAX) = NULL
 AS
 SET NOCOUNT ON
-	INSERT INTO vendors (id, name, description)
-	VALUES (SYSTEM_USER, @name, @description);
+	-- check if vendor exists
+	DECLARE @ovender CHAR(11);
+	SET @ovender = (SELECT id FROM vendors WHERE id = SYSTEM_USER);
+
+	-- create new vendor
+	IF @ovender IS NULL
+		BEGIN
+			INSERT INTO vendors (id, name, description)
+			VALUES (SYSTEM_USER, @name, @description)
+		END
+	ELSE
+		BEGIN
+			UPDATE vendors
+			SET name = @name, description = @description
+			WHERE id = @ovender
+		END
 GO
