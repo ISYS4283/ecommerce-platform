@@ -7,7 +7,7 @@ ALTER PROCEDURE register_vendor
 	@name NVARCHAR(255) = NULL,
 	@description NVARCHAR(MAX) = NULL
 AS
-SET NOCOUNT ON
+	SET NOCOUNT ON
 	-- check if vendor exists
 	DECLARE @ovender CHAR(11);
 	SET @ovender = (SELECT id FROM vendors WHERE id = SYSTEM_USER);
@@ -24,4 +24,12 @@ SET NOCOUNT ON
 			SET name = @name, description = @description
 			WHERE id = @ovender
 		END
+
+	-- audit entry
+	IF(@@ROWCOUNT > 0)
+	INSERT INTO vendors_audit (vendor, name, description)
+	VALUES (SYSTEM_USER, @name, @description);
+GO
+
+GRANT EXECUTE ON register_vendor TO ISYS4283vendors;
 GO
