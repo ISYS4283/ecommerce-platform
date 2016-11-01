@@ -5,10 +5,13 @@ IF OBJECT_ID('dbo.purchase_item', 'p') IS NULL
 GO
 ALTER PROCEDURE purchase_item
 	@product INT,
-	@vendor CHAR(11),
-	@quantity INT
+	@quantity INT,
+	@vendor CHAR(11) = NULL
 AS
 	SET NOCOUNT ON
+	IF @vendor IS NULL
+		SET @vendor = SYSTEM_USER
+
 	-- validate product exists and does not belong to vendor
 	DECLARE @pid INT
 	SET @pid = (
